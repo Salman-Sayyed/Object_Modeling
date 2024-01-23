@@ -1,6 +1,8 @@
 package com.crio.codingame.services;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.crio.codingame.dtos.UserRegistrationDto;
@@ -26,11 +28,20 @@ public class UserService implements IUserService {
     }
     @Override
     public User create(String name) {
+        User user = new User(name,0);
+        return userRepository.save(user);
     }
 
 
     @Override
     public List<User> getAllUserScoreOrderWise(ScoreOrder scoreOrder){
+        List<User> users = userRepository.findAll();
+        if(scoreOrder.equals(ScoreOrder.ASC)){
+            users.sort(Comparator.comparingInt(User::getScore));
+        }else {
+            users.sort(Comparator.comparingInt(User::getScore).reversed());
+        }
+        return users;
     }
 
     @Override
@@ -54,6 +65,27 @@ public class UserService implements IUserService {
 
     @Override
     public UserRegistrationDto withdrawContest(String contestId, String userName) throws ContestNotFoundException, UserNotFoundException, InvalidOperationException {
+        Optional<Contest> contest= contestRepository.findById(contestId);
+        Optional<User> user= userRepository.findByName(userName);
+
+        if(contest.isEmpty()){
+            throw new ContestNotFoundException();
+        }
+        else if(user.isEmpty()){
+            throw new UserNotFoundException();
+        }
+        else if (contest.get().getContestStatus()==ContestStatus.ENDED || contest.get().getContestStatus()==ContestStatus.IN_PROGRESS || contest.get().getCreator()==user.get()){
+            throw new InvalidOperationException();
+        }
+        else if(!user.get().checkIfContestExists(contest.get())){
+            throw new InvalidOperationException();
+        }
+        else{
+            user.get().deleteContest(contest.get());
+            userRepository.save(user.get());
+
+            return new UserRegistrationDto(contest.get().getName(), userName, RegisterationStatus.NOT_REGISTERED);
+        }
     }
     
 }

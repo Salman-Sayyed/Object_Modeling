@@ -1,5 +1,7 @@
 package com.crio.codingame.entities;
 
+import com.crio.codingame.exceptions.InvalidOperationException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,7 +48,11 @@ public class User extends BaseEntity {
     }
 
     public void deleteContest(Contest contest){
-        contests.removeIf(c -> c.getId() == contest.getId());
+        if(contest.getContestStatus()==ContestStatus.NOT_STARTED){
+            contests.removeIf(c -> c.getId() == contest.getId());
+        }else{
+            throw new InvalidOperationException("Contest is either already in progress or ended");
+        }
     }
 
     public List<Contest> getContests() {
@@ -55,7 +61,7 @@ public class User extends BaseEntity {
 
 
     public boolean checkIfContestExists(Contest contest){
-        return false;
+        return contests.stream().anyMatch(contest1 -> contest1.equals(contest1));
     }
 
     public void addContestQuestion(Contest contest, List<Question> qList){

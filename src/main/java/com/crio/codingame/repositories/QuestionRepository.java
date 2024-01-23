@@ -1,9 +1,6 @@
 package com.crio.codingame.repositories;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.crio.codingame.entities.Level;
@@ -38,6 +35,8 @@ public class QuestionRepository implements IQuestionRepository {
 
     @Override
     public List<Question> findAll() {
+        List<Question> questions = new ArrayList<>(questionMap.values());
+        return questions;
     }
 
     @Override
@@ -72,6 +71,8 @@ public class QuestionRepository implements IQuestionRepository {
 
     @Override
     public List<Question> findAllQuestionLevelWise(Level level) {
+        List<Question> questions = questionMap.values().stream().filter(question->question.getLevel()==level).collect(Collectors.toList());
+        return questions;
     }
     
 }

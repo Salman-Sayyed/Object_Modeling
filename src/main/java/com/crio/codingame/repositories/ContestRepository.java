@@ -1,9 +1,6 @@
 package com.crio.codingame.repositories;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.crio.codingame.entities.Contest;
@@ -40,6 +37,8 @@ public class ContestRepository implements IContestRepository {
 
     @Override
     public List<Contest> findAll() {
+        List<Contest> allContest = new ArrayList<>(contestMap.values());
+        return allContest;
     }
 
     @Override
@@ -74,6 +73,8 @@ public class ContestRepository implements IContestRepository {
 
     @Override
     public List<Contest> findAllContestLevelWise(Level level) {
+        List<Contest> contestList = contestMap.values().stream().filter(contest -> contest.getLevel()==level).collect(Collectors.toList());
+        return contestList;
     }
 
     

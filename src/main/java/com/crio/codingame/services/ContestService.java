@@ -1,6 +1,7 @@
 package com.crio.codingame.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -55,11 +56,19 @@ public class ContestService implements IContestService {
 
 
     private List<Question> pickQuestionsList(final List<Question> questions,final Integer numQuestion){
+        Collections.shuffle(questions);
+        List<Question> questionList = questions.subList(0,numQuestion-1);
+        return questionList;
     }
 
 
     @Override
     public List<Contest> getAllContestLevelWise(Level level) {
+        if(level==null){
+            return contestRepository.findAll();
+        }
+        List<Contest> contests = contestRepository.findAllContestLevelWise(level);
+        return contests;
     }
 
     @Override
@@ -87,6 +96,13 @@ public class ContestService implements IContestService {
 
     
     private void validateContest(final Contest contest, final String contestCreator) throws InvalidContestException {
+        if(contest.getContestStatus()==ContestStatus.IN_PROGRESS){
+            throw new InvalidContestException("Contest Already in Progress");
+        } else if (contest.getContestStatus()==ContestStatus.ENDED) {
+            throw new InvalidContestException("Contest Already Ended");
+        } else if (!contest.getCreator().getName().equals(contestCreator)) {
+            throw new InvalidContestException("provided contestCreator is not the creator for this contest");
+        }
     }
 
     private List<Question> pickRandomQuestions(final List<Question> questions){

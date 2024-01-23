@@ -25,6 +25,18 @@ public class CreateContestCommand implements ICommand{
 
     @Override
     public void execute(List<String> tokens) {
+        String contestName = tokens.get(1);
+        Level level = Level.valueOf(tokens.get(2));
+        String creatorName = tokens.get(3);
+        Contest contest;
+        try {
+            if (tokens.size() == 5)
+                contest = contestService.create(contestName, level, creatorName, Integer.parseInt(tokens.get(4)));
+            else
+                contest = contestService.create(contestName, level, creatorName, null);
+            System.out.println(contest);
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+        }
     }
-    
 }

@@ -37,6 +37,8 @@ public class UserRepository implements IUserRepository{
 
     @Override
     public List<User> findAll() {
+        List<User> users = userMap.values().stream().collect(Collectors.toList());
+        return users;
     }
 
     @Override
@@ -71,6 +73,9 @@ public class UserRepository implements IUserRepository{
 
     @Override
     public Optional<User> findByName(String name) {
+        List<User> users = findAll();
+        Optional<User> optionalUser = users.stream().filter(user -> user.getName().equals(name)).findFirst();
+        return optionalUser;
     }
     
 }
